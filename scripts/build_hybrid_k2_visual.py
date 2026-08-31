@@ -41,7 +41,7 @@ wrong thing.
 
 Usage::
 
-    make k2-data
+    make hero-data
 """
 
 from __future__ import annotations

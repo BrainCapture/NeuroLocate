@@ -1,5 +1,5 @@
 .PHONY: help setup demo test test-images build gen-tests \
-        summary figures k2-data k2-visual cortex-mesh \
+        summary figures hero hero-data cortex-mesh \
         gradcheck batching vjp-report observations benchmark clean
 
 VENV ?= .venv
@@ -39,10 +39,10 @@ help:
 	@echo "Regenerating artifacts (all optional; the committed ones are enough):"
 	@echo "  make observations Rebuild the benchmark EEG from the MNE ico4 generator"
 	@echo "  make benchmark    Re-run every method over the matrix ($(JOBS)x$(THREADS) threads)"
-	@echo "  make figures      The benchmark figures"
-	@echo "  make cortex-mesh  The cortical surface the K=2 visual is drawn on (needs MNE)"
-	@echo "  make k2-data      Replay the frozen K=2 trial to record its trajectories"
-	@echo "  make k2-visual    The K=2 figure, MP4 and README loop"
+	@echo "  make figures      The architecture and benchmark figures"
+	@echo "  make hero         The README animation, from the recorded trajectories"
+	@echo "  make hero-data    Replay the frozen K=2 trial to record those trajectories"
+	@echo "  make cortex-mesh  The cortical surface the animation is drawn on (needs MNE)"
 	@echo "  make gen-tests    Regenerate the packaged component test cases"
 
 setup:
@@ -93,8 +93,10 @@ benchmark:
 			&& echo "  done {}" || echo "  FAILED {} (see results/hybrid/shards/{}.log)"'
 	@echo "shards finished; re-run to resume any that died, then 'make summary'"
 
+#: The two static figures. Both read the committed shards and nothing else.
 figures:
-	$(PY) scripts/plot_hybrid_inverse.py --shards results/hybrid/shards
+	$(PY) scripts/plot_architecture.py
+	$(PY) scripts/plot_benchmark.py
 
 #: Needs MNE and the fsaverage anatomy. The output is committed, so this is only
 #: needed if the mesh itself has to be rebuilt.
@@ -104,13 +106,13 @@ cortex-mesh:
 #: Replays one frozen deterministic trial of `h-k2-shared-close` to record the
 #: two optimizer trajectories the shards do not store, and refuses to write
 #: anything unless every reproduced error and residual matches the frozen shard.
-#: About five minutes. `k2-visual` needs only what it wrote, plus ffmpeg (or the
+#: About five minutes. `hero` needs only what it wrote, plus ffmpeg (or the
 #: `imageio-ffmpeg` wheel) for the MP4.
-k2-data:
+hero-data:
 	env $(THREAD_ENV) $(PY) scripts/build_hybrid_k2_visual.py
 
-k2-visual:
-	$(PY) scripts/plot_hybrid_k2_visual.py
+hero:
+	$(PY) scripts/plot_hero.py
 
 gen-tests:
 	$(PY) scripts/gen_test_cases.py

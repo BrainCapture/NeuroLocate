@@ -35,6 +35,17 @@ from neurolayout.hybrid.report import (
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SHARDS = REPO_ROOT / "results" / "hybrid" / "shards"
 README = REPO_ROOT / "README.md"
+BENCHMARK_DOC = REPO_ROOT / "docs" / "BENCHMARK.md"
+
+#: The figures the README embeds, and a floor on each one's size. A figure that
+#: silently became a stub would break the page without failing anything else.
+FIGURES = {
+    "docs/figures/hero.gif": 200_000,
+    "docs/figures/hero.png": 40_000,
+    "docs/figures/architecture.png": 20_000,
+    "docs/figures/benchmark.png": 30_000,
+    "docs/media/hero.mp4": 100_000,
+}
 
 #: The demo's condition and trial, as ``scripts/demo.py`` names them.
 DEMO_CONDITION = "h-k2-shared-close"
@@ -169,23 +180,41 @@ def _readme() -> str:
     return README.read_text()
 
 
+#: The headline numbers the README itself must carry. The rest of the recovery
+#: table lives in the figure and in the benchmark document, which is checked
+#: separately below.
 @pytest.mark.parametrize(
     "text",
-    [
-        "124.3 mm",
-        "8.7 mm",
-        "6.9 mm",
-        "41.3%",
-        "57.5%",
-        "71.3%",
-        "80.0%",
-        "82.5%",
-        "29.9 mm",
-    ],
+    ["124.3 mm", "8.7 mm", "6.9 mm", "41.3%", "80.0%", "82.5%", "29.9 mm"],
 )
 def test_the_readme_still_states_the_number(text) -> None:
     """A number removed from the README is a claim quietly changed."""
     assert text in _readme()
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["41.3%", "57.5%", "61.3%", "71.3%", "80.0%", "82.5%", "29.9", "69.0", "16.8"],
+)
+def test_the_benchmark_document_still_states_the_number(text) -> None:
+    """The full table has to keep every row, including the ones that lose."""
+    assert text in BENCHMARK_DOC.read_text()
+
+
+@pytest.mark.parametrize("relative", sorted(FIGURES))
+def test_the_readme_figure_exists(relative) -> None:
+    """The README embeds these, so an empty or missing one is a broken page."""
+    path = REPO_ROOT / relative
+    assert path.exists(), relative
+    assert path.stat().st_size >= FIGURES[relative], relative
+
+
+def test_the_readme_embeds_the_hero_and_the_two_figures() -> None:
+    """And it has to actually reference them."""
+    text = _readme()
+    for relative in ("docs/figures/hero.gif", "docs/figures/architecture.png",
+                     "docs/figures/benchmark.png"):
+        assert relative in text, relative
 
 
 def test_the_readme_does_not_overclaim() -> None:

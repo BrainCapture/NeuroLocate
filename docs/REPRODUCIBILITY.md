@@ -63,7 +63,7 @@ Expected runtime, 8 OpenMP threads: proposal 0.07 s, each of the two refinements
 ## Tests
 
 ```bash
-make test         # about 3 minutes, no container runtime needed
+make test         # about 8 minutes, no container runtime needed
 ```
 
 | file | gate |
@@ -148,7 +148,7 @@ make gradcheck      # the composed derivative check (~2 min)
 make batching       # what the batched component path costs
 make vjp-report     # the position-VJP step-size sweep
 make summary        # re-aggregate and print
-make figures        # the benchmark figures
+make figures        # the architecture and benchmark figures
 ```
 
 `make benchmark` runs six of the seven methods. The seventh,
@@ -192,15 +192,21 @@ the `proposal` component is identical to the orchestrator's, via
 and cannot import the orchestrator package, so the definition is duplicated; that
 check is what keeps the duplicate honest.
 
-## The K=2 visual
+## The figures and the animation
 
 ```bash
+make figures       # docs/figures/architecture.png and benchmark.png, seconds
 make cortex-mesh   # results/cortex_ico5.npz, needs MNE and fsaverage
-make k2-data       # replay the frozen trial, ~5 min
-make k2-visual     # the PNG, the MP4 and the GIF
+make hero-data     # replay the frozen trial to record its trajectories, ~5 min
+make hero          # docs/figures/hero.gif, hero.png and docs/media/hero.mp4
 ```
 
-The shards store answers, not paths, so `make k2-data` re-runs the two
+`plot_benchmark.py` recomputes its bars from the shards on every run, so the
+figure cannot drift from what `make summary` prints. `plot_architecture.py` draws
+a diagram and reads nothing. Both share one palette, in
+`scripts/showcase_style.py`.
+
+The shards store answers, not paths, so `make hero-data` re-runs the two
 refinements of that one trial to record the trajectories. It is a replay, not a
 benchmark run: it uses the committed observation, the frozen refinement settings
 and the packaged checkpoint, and **refuses to write anything** unless every
@@ -208,8 +214,9 @@ reproduced per-source error and sensor residual matches the frozen shard to
 0.05 mm and 1e-4. Both outputs, and the mesh, are committed, so neither step is
 needed to view the figures.
 
-`make k2-visual` needs `ffmpeg` on the `PATH` for the MP4; the `imageio-ffmpeg`
-wheel installed by `make setup` is used as a fallback. `--no-video` skips it.
+`make hero` needs `ffmpeg` on the `PATH` for the MP4; the `imageio-ffmpeg` wheel
+installed by `make setup` is used as a fallback. `--no-video` skips it. The whole
+clip takes about seven minutes to render.
 
 ## What is not here
 

@@ -110,11 +110,9 @@ changing the starting point buys. 80.0% → 82.5% is what the physical refinemen
 adds on top of it. The refinement's contribution is clearer in continuous
 localization error — the paired table below — than in the recovery rate.
 
-![Every method on every correlated and shared-dynamics trial](figures/hybrid_ablation.png)
+![Recovery and inference time, by method](figures/benchmark.png)
 
-*Left: one point per trial. Middle: paired against the composition — below the
-line is a trial the composition won. Right: the correlation axis the matrix
-exists for.*
+*Recomputed from the shards by `scripts/plot_benchmark.py` every time it runs.*
 
 ## Paired comparisons
 
@@ -145,19 +143,9 @@ composition is closer:
 **K=4 is not solved by the current proposal.** RAP-MUSIC is 29.9 mm closer than
 the composition in the frozen K=4 comparison. The refinement still improves the
 proposal at K=4 (-13.3 mm), so what fails at K=4 is the proposal, not the
-physics.
-
-![A difficult K = 4 trial](figures/hybrid_k4_example.png)
-
-*The K=4 shared-dynamics trial the uninformed arm failed worst on — chosen by
-that arm's error, not by the composition's. Every method clusters its estimates
-on two of the four sources and misses the other two.*
-
-![What the refinement did to the proposal](figures/hybrid_refinement.png)
-
-*The proposal before and after the OpenMEEG refinement, trial by trial, with the
-sensor residual beside the localization error — because a fit can improve while a
-location does not.*
+physics. The open circles in the figure above are the same recovery rate at
+K=4: every method's bar and circle sit far apart, and the composition's circle
+is behind RAP-MUSIC's.
 
 ## Runtime
 
