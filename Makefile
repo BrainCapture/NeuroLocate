@@ -1,5 +1,5 @@
 .PHONY: help setup demo test test-images build gen-tests \
-        summary figures hero hero-data cortex-mesh \
+        summary figures k2-visual k2-data cortex-mesh \
         gradcheck batching vjp-report observations benchmark clean
 
 VENV ?= .venv
@@ -39,10 +39,10 @@ help:
 	@echo "Regenerating artifacts (all optional; the committed ones are enough):"
 	@echo "  make observations Rebuild the benchmark EEG from the MNE ico4 generator"
 	@echo "  make benchmark    Re-run every method over the matrix ($(JOBS)x$(THREADS) threads)"
-	@echo "  make figures      The architecture and benchmark figures"
-	@echo "  make hero         The README animation, from the recorded trajectories"
-	@echo "  make hero-data    Replay the frozen K=2 trial to record those trajectories"
-	@echo "  make cortex-mesh  The cortical surface the animation is drawn on (needs MNE)"
+	@echo "  make figures      The benchmark figure (architecture.png is hand-authored)"
+	@echo "  make k2-visual    The README loop, from the recorded trajectories"
+	@echo "  make k2-data      Replay the frozen K=2 trial to record those trajectories"
+	@echo "  make cortex-mesh  The cortical surface the loop is drawn on (needs MNE)"
 	@echo "  make gen-tests    Regenerate the packaged component test cases"
 
 setup:
@@ -93,9 +93,9 @@ benchmark:
 			&& echo "  done {}" || echo "  FAILED {} (see results/hybrid/shards/{}.log)"'
 	@echo "shards finished; re-run to resume any that died, then 'make summary'"
 
-#: The two static figures. Both read the committed shards and nothing else.
+#: The generated static figure. `docs/figures/architecture.png` is authored by
+#: hand and is deliberately not regenerated here.
 figures:
-	$(PY) scripts/plot_architecture.py
 	$(PY) scripts/plot_benchmark.py
 
 #: Needs MNE and the fsaverage anatomy. The output is committed, so this is only
@@ -106,13 +106,12 @@ cortex-mesh:
 #: Replays one frozen deterministic trial of `h-k2-shared-close` to record the
 #: two optimizer trajectories the shards do not store, and refuses to write
 #: anything unless every reproduced error and residual matches the frozen shard.
-#: About five minutes. `hero` needs only what it wrote, plus ffmpeg (or the
-#: `imageio-ffmpeg` wheel) for the MP4.
-hero-data:
+#: About five minutes. `k2-visual` needs only what it wrote, and takes seconds.
+k2-data:
 	env $(THREAD_ENV) $(PY) scripts/build_hybrid_k2_visual.py
 
-hero:
-	$(PY) scripts/plot_hero.py
+k2-visual:
+	$(PY) scripts/plot_k2_visual.py
 
 gen-tests:
 	$(PY) scripts/gen_test_cases.py

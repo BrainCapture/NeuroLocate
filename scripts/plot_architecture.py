@@ -1,7 +1,14 @@
 #!/usr/bin/env python
 # Copyright 2026 NeuroLocate contributors
 # SPDX-License-Identifier: Apache-2.0
-"""The composition: what runs where, what crosses each boundary, and what returns.
+"""A generated diagram of the composition: what runs where, and what returns.
+
+.. warning::
+
+   ``docs/figures/architecture.png`` — the figure the README opens with — is
+   **not** this script's output. It is authored by hand, and this script's
+   default output path is deliberately a different file so that running it
+   cannot overwrite it. `make figures` does not run this.
 
 Two of the four boxes are Tesseract components, and they are the two that own a
 runtime the orchestrator cannot import. The figure's whole job is to make that
@@ -55,7 +62,8 @@ def main() -> int:
     """Draw the figure."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--out", type=Path, default=REPO_ROOT / "docs" / "figures" / "architecture.png"
+        "--out", type=Path,
+        default=REPO_ROOT / "docs" / "figures" / "architecture_generated.png",
     )
     arguments = parser.parse_args()
 

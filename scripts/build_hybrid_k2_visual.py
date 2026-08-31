@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # Copyright 2026 NeuroLocate contributors
 # SPDX-License-Identifier: Apache-2.0
-r"""Record the optimizer trajectories for the K=2 hero figure and animation.
+r"""Record the optimizer trajectories for the K=2 README loop.
 
 The frozen hybrid shards store answers, not paths: ``results/hybrid/shards`` has
 each method's final source set, its sensor residual and its error, and nothing in
-between. The hero visualization is *about* what happens in between, so the two
+between. The README loop is *about* what happens in between, so the two
 refinements of one deterministic trial are re-run here to record it.
 
 This is a replay, not a benchmark run:
@@ -41,7 +41,7 @@ wrong thing.
 
 Usage::
 
-    make hero-data
+    make k2-data
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ sys.path.insert(0, str(REPO_ROOT / "components" / "shared_code"))
 
 import neurolayout  # noqa: F401,E402  (enables float64 in JAX)
 
-#: The trial the hero figure draws, named here rather than searched for. It is
+#: The trial the loop draws, named here rather than searched for. It is
 #: the ``h-k2-shared-close`` trial the report already singles out: the one where
 #: the single-start gradient ends in the wrong basin at 124.3 mm while the
 #: proposal-initialized refinement finishes at 6.9 mm, at the *same* sensor

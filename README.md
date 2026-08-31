@@ -7,12 +7,7 @@ boundary-element solver computes the physics. A JAX/Optax loop refines the
 proposal by differentiating through both. Tesseract composes the three without
 any of them sharing a runtime or an autodiff framework.
 
-![Same physical refinement, two initializations](docs/figures/hero.gif)
-
-*Two sources 15.2 mm apart, sharing one time course, seen by 64 electrodes. Both
-runs descend the same objective through the same OpenMEEG solver for the same 300
-steps. Only the starting point differs.*
-[Full clip](docs/media/hero.mp4) · [still](docs/figures/hero.png)
+![The composition, and the path the gradient takes back through it](docs/figures/architecture.png)
 
 ## Try it
 
@@ -35,8 +30,6 @@ for `make build`, which packages each component as a container image.
 
 ## Why Tesseract
 
-![The composition, and the path the gradient takes back through it](docs/figures/architecture.png)
-
 | component | native stack | derivative |
 | --- | --- | --- |
 | `proposal` | PyTorch | `torch.autograd` |
@@ -58,7 +51,13 @@ become sources is a hard `argmax` with greedy non-maximum suppression: discrete,
 and detached. Gradient flows through each selected voxel's continuous offset and
 dipole direction, and everything downstream of them.
 
-## What the animation shows
+## What the loop shows
+
+![Same physical refinement, different initialization](docs/figures/hybrid_k2_visual.gif)
+
+*Two sources 15.2 mm apart, sharing one time course, seen by 64 electrodes. Both
+runs descend the same objective through the same OpenMEEG solver for the same 300
+steps, shown at seven recorded checkpoints. Only the starting point differs.*
 
 Given a 64-channel epoch, find the `K` compact sources that produced it. `K` is
 the number of simultaneously active sources the estimator is told to look for.
@@ -66,7 +65,7 @@ There are about 20,000 candidate cortical locations and 64 sensors, so the
 unrestricted problem has no unique answer; a small, known `K` is what makes a
 recovered position mean anything. **Every method in this benchmark is given `K`.**
 
-The two runs in the clip differ only in where they start. One begins from an
+The two runs in the loop differ only in where they start. One begins from an
 uninformed point and ends with a source 124.3 mm from the truth. The other begins
 from the trained network's guess and ends 6.9 mm from the worse of the two. Their
 sensor residuals are 0.0117 and 0.0120 — the anatomically poor answer fits the
@@ -120,8 +119,8 @@ make demo          # the deterministic K=2 trial, ~1 min
 make test          # the full in-process suite, ~8 min, no container runtime
 make build         # build both Tesseract images (needs Docker)
 make test-images   # the packaged JSON cases against the built images
-make figures       # the architecture and benchmark figures
-make hero          # the animation, from the recorded trajectories
+make figures       # the benchmark figure
+make k2-visual     # the README loop, from the recorded trajectories
 ```
 
 Every number here comes from a committed artifact: the frozen shards under
@@ -140,9 +139,9 @@ components/
   tesseracts/proposal/  PyTorch network + packaged checkpoint + frozen test cases
   tesseracts/headfield/ OpenMEEG forward + hand-written VJPs + frozen test cases
   shared_code/          NumPy-only geometry and the cached head model
-scripts/                demo, benchmark runner, summary, figures, animation
+scripts/                demo, benchmark runner, summary, figures, README loop
 results/hybrid/         the frozen shards, the observation set, the summary
-docs/                   BENCHMARK.md, REPRODUCIBILITY.md, figures, media
+docs/                   BENCHMARK.md, REPRODUCIBILITY.md, figures
 tests/                  component, gradient, composition and frozen-result gates
 ```
 

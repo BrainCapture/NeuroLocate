@@ -15,8 +15,9 @@ from __future__ import annotations
 
 import numpy as np
 
-#: Paper and type.
-PAPER = "#ffffff"
+#: Paper and type. The warm off-white is the one `docs/figures/architecture.png`
+#: uses, so the README's figures share a ground.
+PAPER = "#fbf9f7"
 INK = "#14161a"
 MUTED = "#767b85"
 FAINT = "#a8adb6"

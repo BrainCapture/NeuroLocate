@@ -148,7 +148,7 @@ make gradcheck      # the composed derivative check (~2 min)
 make batching       # what the batched component path costs
 make vjp-report     # the position-VJP step-size sweep
 make summary        # re-aggregate and print
-make figures        # the architecture and benchmark figures
+make figures        # the benchmark figure
 ```
 
 `make benchmark` runs six of the seven methods. The seventh,
@@ -192,21 +192,23 @@ the `proposal` component is identical to the orchestrator's, via
 and cannot import the orchestrator package, so the definition is duplicated; that
 check is what keeps the duplicate honest.
 
-## The figures and the animation
+## The figures and the loop
 
 ```bash
-make figures       # docs/figures/architecture.png and benchmark.png, seconds
+make figures       # docs/figures/benchmark.png, seconds
 make cortex-mesh   # results/cortex_ico5.npz, needs MNE and fsaverage
-make hero-data     # replay the frozen trial to record its trajectories, ~5 min
-make hero          # docs/figures/hero.gif, hero.png and docs/media/hero.mp4
+make k2-data       # replay the frozen trial to record its trajectories, ~5 min
+make k2-visual     # docs/figures/hybrid_k2_visual.gif, seconds
 ```
 
 `plot_benchmark.py` recomputes its bars from the shards on every run, so the
-figure cannot drift from what `make summary` prints. `plot_architecture.py` draws
-a diagram and reads nothing. Both share one palette, in
-`scripts/showcase_style.py`.
+figure cannot drift from what `make summary` prints. `docs/figures/architecture.png`
+is a hand-authored diagram, not a generated artifact: nothing regenerates it, and
+`scripts/plot_architecture.py` is an earlier generated version kept for reference
+whose output path is a different file. The generated figures share one palette,
+in `scripts/showcase_style.py`.
 
-The shards store answers, not paths, so `make hero-data` re-runs the two
+The shards store answers, not paths, so `make k2-data` re-runs the two
 refinements of that one trial to record the trajectories. It is a replay, not a
 benchmark run: it uses the committed observation, the frozen refinement settings
 and the packaged checkpoint, and **refuses to write anything** unless every
@@ -214,9 +216,11 @@ reproduced per-source error and sensor residual matches the frozen shard to
 0.05 mm and 1e-4. Both outputs, and the mesh, are committed, so neither step is
 needed to view the figures.
 
-`make hero` needs `ffmpeg` on the `PATH` for the MP4; the `imageio-ffmpeg` wheel
-installed by `make setup` is used as a fallback. `--no-video` skips it. The whole
-clip takes about seven minutes to render.
+`make k2-visual` draws eight frames at seven of the twenty-one recorded
+checkpoints and one held final frame. It interpolates nothing and recomputes
+nothing; it reads the replay artifact and the cortical mesh, and takes a few
+seconds. All three outputs are committed, so none of these steps is needed to
+view the figures.
 
 ## What is not here
 

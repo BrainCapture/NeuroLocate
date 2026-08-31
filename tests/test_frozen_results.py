@@ -40,11 +40,9 @@ BENCHMARK_DOC = REPO_ROOT / "docs" / "BENCHMARK.md"
 #: The figures the README embeds, and a floor on each one's size. A figure that
 #: silently became a stub would break the page without failing anything else.
 FIGURES = {
-    "docs/figures/hero.gif": 200_000,
-    "docs/figures/hero.png": 40_000,
+    "docs/figures/hybrid_k2_visual.gif": 20_000,
     "docs/figures/architecture.png": 20_000,
     "docs/figures/benchmark.png": 30_000,
-    "docs/media/hero.mp4": 100_000,
 }
 
 #: The demo's condition and trial, as ``scripts/demo.py`` names them.
@@ -149,7 +147,7 @@ def test_the_demo_trial_holds_the_three_published_errors(
 
 
 def test_the_two_sensor_residuals_are_nearly_equal(demo_record) -> None:
-    """The point of the hero visual: similar sensor fit, different anatomy.
+    """The point of the README loop: similar sensor fit, different anatomy.
 
     The anatomically poor answer fits the measurement very slightly *better*, so
     the ordering is asserted as well as the values. If a change ever flipped it,
@@ -209,11 +207,10 @@ def test_the_readme_figure_exists(relative) -> None:
     assert path.stat().st_size >= FIGURES[relative], relative
 
 
-def test_the_readme_embeds_the_hero_and_the_two_figures() -> None:
+def test_the_readme_embeds_every_figure() -> None:
     """And it has to actually reference them."""
     text = _readme()
-    for relative in ("docs/figures/hero.gif", "docs/figures/architecture.png",
-                     "docs/figures/benchmark.png"):
+    for relative in FIGURES:
         assert relative in text, relative
 
 
