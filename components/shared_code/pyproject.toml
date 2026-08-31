@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurolayout_shared"
+version = "0.1.0"
+description = "Shared framework-free code for the NeuroLocate Tesseracts"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+dependencies = [
+    "numpy>=1.24",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["neurolayout_shared", "neurolayout_shared.*"]
+
+# The cached OpenMEEG head model ships with the package: it is what lets the
+# headfield Tesseract image run the BEM forward with nothing but NumPy and
+# OpenMEEG installed — no MNE, no nibabel, no downloaded anatomy.
+[tool.setuptools.package-data]
+neurolayout_shared = ["artifacts/*.npz"]

@@ -1,0 +1,25 @@
+# Tesseract configuration file
+name: "neurolayout_proposal"
+version: "0.1.0"
+description: >
+  Global source-set proposal network. Maps an epoch of 64-channel scalp EEG to a
+  sparse set of continuous source positions and dipole directions, through a small
+  transformer over the epoch's sensor covariance and a coarse volumetric heatmap
+  with continuous offsets. Its parameters are a differentiable *input*, so one
+  jax.grad of a loss defined downstream of the OpenMEEG BEM component returns
+  dL/dweights and trains the network through the compiled C++ solver.
+
+metadata:
+  project: NeuroLocate
+  track: differentiable-inference
+  framework: pytorch
+  role: global-source-proposal
+  differentiable_inputs: "eeg, weights"
+  training_data: "synthetic sources on an OpenMEEG gain bank (original, this project)"
+  weights: "proposal.pt, packaged with the component"
+
+build_config:
+  target_platform: "native"
+  package_data:
+    - [proposal_model.py, proposal_model.py]
+    - [proposal.pt, proposal.pt]

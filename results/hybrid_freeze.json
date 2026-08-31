@@ -1,0 +1,136 @@
+{
+ "benchmark": "hybrid",
+ "conditions": [
+  {
+   "axis": "control",
+   "correlation": "distinct",
+   "correlation_value": null,
+   "mismatch": "full",
+   "n_sources": 1,
+   "n_trials": 8,
+   "name": "h-k1",
+   "separation": null,
+   "snr_db": 20.0
+  },
+  {
+   "axis": "core",
+   "correlation": "distinct",
+   "correlation_value": null,
+   "mismatch": "full",
+   "n_sources": 2,
+   "n_trials": 8,
+   "name": "h-k2-distinct",
+   "separation": "moderate",
+   "snr_db": 20.0
+  },
+  {
+   "axis": "core",
+   "correlation": "correlated",
+   "correlation_value": 0.9,
+   "mismatch": "full",
+   "n_sources": 2,
+   "n_trials": 8,
+   "name": "h-k2-correlated",
+   "separation": "moderate",
+   "snr_db": 20.0
+  },
+  {
+   "axis": "core",
+   "correlation": "shared",
+   "correlation_value": 1.0,
+   "mismatch": "full",
+   "n_sources": 2,
+   "n_trials": 8,
+   "name": "h-k2-shared",
+   "separation": "moderate",
+   "snr_db": 20.0
+  },
+  {
+   "axis": "core",
+   "correlation": "distinct",
+   "correlation_value": null,
+   "mismatch": "full",
+   "n_sources": 4,
+   "n_trials": 8,
+   "name": "h-k4-distinct",
+   "separation": "spread",
+   "snr_db": 20.0
+  },
+  {
+   "axis": "core",
+   "correlation": "correlated",
+   "correlation_value": 0.9,
+   "mismatch": "full",
+   "n_sources": 4,
+   "n_trials": 8,
+   "name": "h-k4-correlated",
+   "separation": "spread",
+   "snr_db": 20.0
+  },
+  {
+   "axis": "core",
+   "correlation": "shared",
+   "correlation_value": 1.0,
+   "mismatch": "full",
+   "n_sources": 4,
+   "n_trials": 8,
+   "name": "h-k4-shared",
+   "separation": "spread",
+   "snr_db": 20.0
+  },
+  {
+   "axis": "separation",
+   "correlation": "shared",
+   "correlation_value": 1.0,
+   "mismatch": "full",
+   "n_sources": 2,
+   "n_trials": 8,
+   "name": "h-k2-shared-close",
+   "separation": "close",
+   "snr_db": 20.0
+  },
+  {
+   "axis": "snr",
+   "correlation": "shared",
+   "correlation_value": 1.0,
+   "mismatch": "full",
+   "n_sources": 2,
+   "n_trials": 8,
+   "name": "h-k2-shared-10db",
+   "separation": "moderate",
+   "snr_db": 10.0
+  },
+  {
+   "axis": "snr",
+   "correlation": "shared",
+   "correlation_value": 1.0,
+   "mismatch": "full",
+   "n_sources": 4,
+   "n_trials": 8,
+   "name": "h-k4-shared-10db",
+   "separation": "spread",
+   "snr_db": 10.0
+  }
+ ],
+ "conditions_fingerprint": "b08fbe96a062291d26cf3fbf84f9347e45799a63919417f04f61937a61e993e4",
+ "fingerprint": "35b6e07a7e1307313d3a9b13c62f3225a8e6f68ddc0e938b313265b45986b342",
+ "frozen_at_commit": "26da1ae6deb73f94b0c887e19b0382bd6ff7ecb2",
+ "methods": [
+  "rapmusic",
+  "scan",
+  "gradient",
+  "gradient_restarts",
+  "proposal",
+  "hybrid",
+  "hybrid_stopgrad"
+ ],
+ "n_conditions": 10,
+ "n_restarts": 4,
+ "n_trials": 80,
+ "note": "Committed before any result in docs/HYBRID_INVERSE.md was produced. The observation artifact is bound to `conditions_fingerprint`, which is all the generator sees; the runner refuses observations built for a different one, and scripts/report_hybrid_benchmark.py refuses shards produced for one. Synthetic, so unlike the Localize-MI freeze this is reproducible from source rather than merely auditable.",
+ "python": "3.11.2",
+ "supersedes": {
+  "fingerprint": "a53c8dacea832aa63a4dd145507983ae166ed05afdb4dfc295110bf7f6816911",
+  "reason": "The earlier declaration was replaced before any result existed, to add the four-restart gradient arm and the closed-form moment warm start. Both strengthen the baseline the method is measured against; neither was chosen from an outcome, because there were none."
+ }
+}

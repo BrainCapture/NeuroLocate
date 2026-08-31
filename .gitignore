@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Experiment outputs. The frozen artifacts the repository needs to reproduce
+# itself offline are committed by exception; everything else here is a run
+# output.
+results/*
+!results/.gitkeep
+!results/hybrid_freeze.json
+!results/cortex_ico5.npz
+!results/hybrid_k2_visual.npz
+!results/hybrid/
+results/hybrid/*
+!results/hybrid/*.json
+!results/hybrid/observations.npz
+!results/hybrid/shards/
+results/hybrid/shards/*
+!results/hybrid/shards/*.json
+
+# The demo writes here; it is a run output, not an artifact.
+results/demo.json

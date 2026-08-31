@@ -1,0 +1,21 @@
+# Tesseract configuration file
+name: "neurolayout_headfield"
+version: "0.1.0"
+description: >
+  Differentiable EEG volume-conduction forward model. Maps continuous source
+  positions and vector moment time courses to 64-channel scalp signals through
+  OpenMEEG's C++ symmetric BEM on a cached fsaverage template head, with a
+  hand-written VJP: exact analytic with respect to the moment, central
+  differences through the real solver with respect to the position. An analytic
+  homogeneous-sphere backend is kept behind the same API as a fallback and as an
+  independent check on the BEM.
+
+metadata:
+  project: NeuroLocate
+  track: differentiable-inference
+  solver: openmeeg-symmetric-bem-v1
+  fallback_solver: sphere-homogeneous-legendre-v1
+  differentiable_inputs: "source_positions, source_timecourses, source_activity, electrode_vectors"
+
+build_config:
+  target_platform: "native"

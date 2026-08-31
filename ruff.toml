@@ -1,0 +1,19 @@
+line-length = 100
+target-version = "py310"
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "D"]
+ignore = [
+    "D203",  # conflicts with D211
+    "D213",  # conflicts with D212
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.per-file-ignores]
+# Test docstrings describe the property under test, not an API. Test classes are
+# grouping, and a well-named test method needs no separate docstring.
+"tests/*" = ["D100", "D101", "D102", "D103"]
+# `tesseract_api.py` loads its sibling `model` module after a sys.path insert.
+"components/tesseracts/proposal/tesseract_api.py" = ["E402"]

@@ -1,0 +1,10 @@
+# Requirements for the proposal Tesseract.
+#
+# CPU-only torch: the network is ~1.15 M parameters and a localization step is
+# dominated by the BEM solve and by round trips, not by FLOPs. This index pin is
+# also the clearest demonstration of why the components are separated -- the
+# head-physics component must never inherit this dependency tree, and this one
+# must never inherit OpenMEEG's.
+--index-url https://download.pytorch.org/whl/cpu
+torch
+numpy>=1.24

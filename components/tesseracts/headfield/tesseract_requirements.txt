@@ -1,0 +1,9 @@
+# Requirements for the headfield Tesseract.
+#
+# This component holds the scientific/compiled stack and must not depend on JAX,
+# PyTorch, or MNE. OpenMEEG ships prebuilt manylinux wheels, so the C++ BEM
+# solver arrives as a binary dependency rather than a source build; the cached
+# template head model travels inside neurolayout_shared as package data.
+numpy>=1.24
+openmeeg>=2.5,<3
+../../shared_code

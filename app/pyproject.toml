@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurolayout"
+version = "0.1.0"
+description = "Differentiable EEG source localization across PyTorch, OpenMEEG and JAX, composed with Tesseract"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+dependencies = [
+    "tesseract-core[runtime]",
+    "tesseract-jax",
+    "jax",
+    "optax",
+    "numpy",
+]
+
+[project.optional-dependencies]
+# Offline artifact generation and figures. Kept out of the base install so the
+# differentiable path stays lightweight, and out of both Tesseract images
+# entirely: nothing here runs inside a component.
+#
+# `mne` is needed only to *generate* the observation artifact (with a forward
+# model the estimators deliberately do not have) and to rebuild the cached head
+# model. The committed artifacts mean the demo and the benchmark do not need it.
+data = [
+    "mne>=1.6",
+    "nibabel>=5.0",   # FreeSurfer surfaces: fsaverage
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    # An ffmpeg binary for the K=2 animation, used only when the host has none
+    # on its PATH. Nothing in the pipeline needs it.
+    "imageio-ffmpeg>=0.4",
+]
+dev = [
+    "pytest>=7.0",
+    "scipy",
+    "openmeeg>=2.5,<3",  # the headfield component's solver, for the local transport
+    "neurolayout[data]",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["neurolayout", "neurolayout.*"]
