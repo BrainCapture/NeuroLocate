@@ -104,6 +104,19 @@ into PyTorch parameters. That verifies the longer cross-framework derivative
 path, but under the tested protocol it did not improve localization. It is not
 the source of the headline result.
 
+### Gradient-based refinement through OpenMEEG
+
+![Gradient refinement through OpenMEEG](docs/figures/localization_trial.png)
+
+In a controlled `K = 1` example, JAX/Optax refines a continuous source position
+through the OpenMEEG Tesseract from 24.0 mm initial error to effectively zero
+over 250 optimizer steps. The reconstruction objective decreases throughout the
+run, where every position update in JAX uses the VJP supplied by the OpenMEEG component.
+
+This is a gradient-path demonstration, not the headline localization benchmark.
+The harder `K = 2` evaluation below tests the learned initialization and physical
+refinement under ambiguous multi-source conditions.
+
 ## Why Tesseract is useful here
 
 There are other ways to connect these systems. The alternative, however, would
