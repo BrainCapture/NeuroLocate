@@ -116,96 +116,103 @@ def _present(records: list[dict]) -> list[str]:
 
 
 def figure_architecture(path: Path, gradcheck: dict | None) -> None:
-    """Draw the composition, and label each boundary with its own derivative rule.
+    """Draw the composition: which framework sits where, and which arrow is what.
 
-    Hand-drawn boxes rather than a graph library: the point of the figure is which
-    framework sits where and which arrow is which mechanism, and that is four
-    boxes and six arrows.
+    Hand-drawn boxes rather than a graph library. The figure carries the diagram
+    and nothing else — the numbers and the argument live in the document that
+    embeds it.
+
+    Args:
+        path: Where to write the PNG.
+        gradcheck: Unused; kept so the caller's signature does not change.
     """
+    del gradcheck
     plt = _plt()
-    figure, axes = plt.subplots(figsize=(11.5, 5.6))
-    axes.set_xlim(0, 11.5)
-    axes.set_ylim(0, 5.6)
-    axes.axis("off")
-    axes.grid(False)
 
+    ink = "#1a1a1a"
+    grad = "#c1121f"
     boxes = [
-        (0.15, 3.75, 2.0, 1.0, "observed EEG\n$y\\;[C, T]$", "#e8e8e8", "#444444"),
-        (2.75, 3.75, 3.6, 1.0,
-         "Tesseract  $\\bf{proposal}$\nPyTorch  ·  1.15 M parameters\n"
-         "covariance $\\to$ heatmap $\\to$ $K$ sources", "#dfe8f5", "#2b4d8f"),
-        (7.0, 3.75, 4.3, 1.0,
-         "Tesseract  $\\bf{headfield}$\nOpenMEEG C++ symmetric BEM\n"
-         "$G(p)\\,m$ — no AD framework inside", "#f5e6d5", "#b06d00"),
-        (0.15, 0.75, 11.15, 0.85,
-         "JAX / Optax   —   $L=\\|(I-P_{C(\\theta)})\\,y\\|^2/\\|y\\|^2$\n"
-         "imports neither PyTorch nor OpenMEEG", "#e3f0e6", "#1b7f3b"),
+        # x, width, title, lines, fill, edge
+        (0.20, 2.10, "observed EEG", ["$y$  [64, T]"], "#eceef2", "#5a6072"),
+        (3.10, 3.60, "proposal", ["PyTorch", "torch.autograd"], "#dfe8f5", "#2b4d8f"),
+        (7.50, 3.80, "headfield",
+         ["OpenMEEG C++ symmetric BEM",
+          "analytic + finite-difference VJP"], "#f7e7d4", "#b06d00"),
     ]
-    for x, y, width, height, text, fill, edge in boxes:
+
+    style = {
+        "font.family": ["TeX Gyre Heros", "Nimbus Sans", "DejaVu Sans"],
+        "mathtext.fontset": "stixsans",
+        "text.color": ink,
+    }
+    with plt.rc_context(style):
+        figure, axes = plt.subplots(figsize=(11.5, 3.5))
+        axes.set_xlim(0, 11.5)
+        axes.set_ylim(0, 3.5)
+        axes.axis("off")
+
+        top, height = 2.15, 1.25
+        for x, width, title, lines, fill, edge in boxes:
+            axes.add_patch(
+                plt.Rectangle(
+                    (x, top), width, height, facecolor=fill, edgecolor=edge,
+                    linewidth=1.5, zorder=2,
+                )
+            )
+            # One centred block per box, so a box with fewer lines is not
+            # top-heavy against its neighbours.
+            rows = [(title, 13, "bold", edge)] + [(line, 10, "normal", ink)
+                                                  for line in lines]
+            first = top + height / 2 + 0.30 * (len(rows) - 1) / 2
+            for index, (text, size, weight, colour) in enumerate(rows):
+                axes.text(
+                    x + width / 2, first - 0.30 * index, text, ha="center",
+                    va="center", fontsize=size, weight=weight, color=colour,
+                    zorder=3,
+                )
+
+        bottom, bar = 0.15, 0.85
         axes.add_patch(
             plt.Rectangle(
-                (x, y), width, height, facecolor=fill, edgecolor=edge, linewidth=1.6,
-                zorder=2,
+                (0.20, bottom), 11.10, bar, facecolor="#e4f0e7",
+                edgecolor="#1b7f3b", linewidth=1.5, zorder=2,
             )
         )
         axes.text(
-            x + width / 2, y + height / 2, text, ha="center", va="center",
-            fontsize=8.8, zorder=3,
+            5.75, bottom + bar / 2 + 0.15, "JAX / Optax", ha="center", va="center",
+            fontsize=13, weight="bold", color="#1b7f3b", zorder=3,
         )
-
-    forward = dict(arrowstyle="-|>", color="#444444", linewidth=1.7, mutation_scale=15)
-    backward = dict(arrowstyle="-|>", color="#c1121f", linewidth=1.9, mutation_scale=15,
-                    linestyle="--")
-    axes.annotate("", xy=(2.72, 4.45), xytext=(2.18, 4.45), arrowprops=forward, zorder=4)
-    axes.annotate("", xy=(6.97, 4.45), xytext=(6.38, 4.45), arrowprops=forward, zorder=4)
-    axes.text(6.67, 4.62, "$p, m$", fontsize=8, ha="center", color="#444444")
-    axes.annotate("", xy=(10.4, 1.64), xytext=(10.4, 3.73), arrowprops=forward, zorder=4)
-    axes.text(10.5, 2.7, "predicted EEG", fontsize=8, color="#444444", va="center")
-
-    axes.annotate("", xy=(8.1, 3.73), xytext=(8.1, 1.64), arrowprops=backward, zorder=4)
-    axes.annotate("", xy=(6.41, 4.05), xytext=(6.94, 4.05), arrowprops=backward, zorder=4)
-    axes.annotate("", xy=(2.21, 4.05), xytext=(2.72, 4.05), arrowprops=backward, zorder=4)
-    axes.text(
-        8.25, 2.7, "$\\nabla_\\theta L$", fontsize=10, color="#c1121f", va="center"
-    )
-
-    axes.text(
-        0.15, 3.5,
-        "One $\\nabla_\\theta L$, four derivative mechanisms with no framework in common:",
-        fontsize=9.4, color="#c1121f", va="top",
-    )
-    labels = (
-        ("① outer objective", "JAX", "#1b7f3b"),
-        ("② source position", "central differences through the C++ BEM", "#b06d00"),
-        ("③ source moment", "hand-written analytic algebra", "#b06d00"),
-        ("④ network parameters", "torch.autograd", "#2b4d8f"),
-    )
-    for index, (stage, mechanism, color) in enumerate(labels):
-        y = 3.16 - 0.32 * index
-        axes.text(0.25, y, stage, fontsize=8.6, color=color, va="top", weight="bold")
-        axes.text(2.35, y, f"— {mechanism}", fontsize=8.6, color="#333333", va="top")
-
-    axes.text(
-        0.15, 5.42,
-        "The proposal network's weights are a differentiable $\\it{input}$ to its "
-        "Tesseract, so $dL/d\\theta$ is an ordinary cotangent —\nthe same gradient "
-        "that localizes a source is the one that trains the network.",
-        fontsize=9, va="top",
-    )
-    if gradcheck:
         axes.text(
-            11.35, 0.6,
-            "A composed directional finite-difference check verifies this derivative "
-            "path. Smallest recorded relative\ndiscrepancy in the configured check: "
-            f"{gradcheck.get('best_relative_error', float('nan')):.2e}, over "
-            f"{gradcheck.get('n_parameters', 0):,} network parameters on the real "
-            "OpenMEEG BEM.\nThis tests derivative composition, not localization "
-            "accuracy.",
-            fontsize=8.3, ha="right", va="top", color="#1b7f3b",
+            5.75, bottom + bar / 2 - 0.15, "jax.grad", ha="center", va="center",
+            fontsize=10, zorder=3,
         )
-    figure.tight_layout()
-    figure.savefig(path, dpi=170, bbox_inches="tight")
-    plt.close(figure)
+
+        forward = dict(arrowstyle="-|>", color=ink, linewidth=1.6, mutation_scale=14)
+        backward = dict(arrowstyle="-|>", color=grad, linewidth=1.6, mutation_scale=14,
+                        linestyle=(0, (4, 3)))
+
+        for tail, head, label in ((2.30, 3.05, None), (6.70, 7.45, "$p, m$")):
+            axes.annotate("", xy=(head, top + 0.82), xytext=(tail, top + 0.82),
+                          arrowprops=forward, zorder=4)
+            if label:
+                axes.text((tail + head) / 2, top + 0.96, label, fontsize=10,
+                          ha="center", va="bottom")
+        for tail, head in ((3.05, 2.30), (7.45, 6.70)):
+            axes.annotate("", xy=(head, top + 0.40), xytext=(tail, top + 0.40),
+                          arrowprops=backward, zorder=4)
+
+        middle = (top + bottom + bar) / 2
+        axes.annotate("", xy=(10.10, bottom + bar + 0.02), xytext=(10.10, top - 0.02),
+                      arrowprops=forward, zorder=4)
+        axes.text(10.24, middle, "predicted EEG", fontsize=10, ha="left", va="center")
+        axes.annotate("", xy=(8.30, top - 0.02), xytext=(8.30, bottom + bar + 0.02),
+                      arrowprops=backward, zorder=4)
+        axes.text(8.16, middle, r"$\nabla_\theta L$", fontsize=12, ha="right",
+                  va="center", color=grad)
+
+        figure.savefig(path, dpi=200, bbox_inches="tight", pad_inches=0.16,
+                       facecolor="white")
+        plt.close(figure)
     print(f"wrote {path}")
 
 
